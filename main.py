@@ -1,39 +1,63 @@
-from db import Database
-from core import BudgetCore
+from storage import ExcelStorage
+from budget import BudgetEngine
+from recurring import RecurringEngine
 from datetime import datetime
 
 
-db = Database()
-core = BudgetCore(db)
+# ---------------- SETUP ----------------
+storage = ExcelStorage()
+budget = BudgetEngine(storage)
+recurring = RecurringEngine(storage)
 
-user_id = 1
+now = datetime.now()
 
+
+# ---------------- MENU ----------------
 
 while True:
-    print("\n--- BUDGET APP ---")
+
+    print("\n========================")
+    print("     BUDGET SYSTEM")
+    print("========================")
     print("1. Add Income")
     print("2. Add Expense")
-    print("3. View Summary")
-    print("4. Exit")
+    print("3. Monthly Summary")
+    print("4. Category Breakdown")
+    print("5. Check Recurring")
+    print("6. Exit")
 
     choice = input("> ")
-    month = datetime.now().strftime("%Y-%m")
 
+    year = now.year
+    month = now.month
+
+    # ---------------- INCOME ----------------
     if choice == "1":
         cat = input("Category: ")
         amt = float(input("Amount: "))
-        core.add_income(user_id, cat, amt)
+        budget.add_income(cat, amt)
 
+    # ---------------- EXPENSE ----------------
     elif choice == "2":
         cat = input("Category: ")
         amt = float(input("Amount: "))
-        core.add_expense(user_id, cat, amt)
+        budget.add_expense(cat, amt)
 
+    # ---------------- SUMMARY ----------------
     elif choice == "3":
-        income, expenses, balance = core.summary(user_id, month)
-        print("\nIncome:", income)
-        print("Expenses:", expenses)
-        print("Balance:", balance)
+        print(budget.monthly_summary(year, month))
 
+    # ---------------- BREAKDOWN ----------------
     elif choice == "4":
+        print(budget.category_breakdown(year, month))
+
+    # ---------------- RECURRING ----------------
+    elif choice == "5":
+        due = recurring.get_due_today()
+
+        for item in due:
+            print("DUE:", item["category"], item["amount"])
+
+    # ---------------- EXIT ----------------
+    elif choice == "6":
         break
