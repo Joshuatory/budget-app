@@ -1,26 +1,26 @@
-if __name__ == "__main__":
-    print("Budget app starting...")
+from core import BudgetCore
+from db import Database
+from excel import ExcelManager
+from datetime import datetime
 
-    from excel_store import ExcelStore
-    from budget_core import BudgetCore
-    from reports import Reports
-    from recurring import RecurringEngine
-    from datetime import datetime
 
-    store = ExcelStore()
-    core = BudgetCore(store)
-    reports = Reports(store)
-    recurring = RecurringEngine(store)
+def main():
+    db = Database()
+    core = BudgetCore(db)
+    excel = ExcelManager()
+
+    user_id = 1  # simple single-user system
 
     while True:
-        print("\n--- BUDGET APP ---")
+        print("\n========================")
+        print("      BUDGET APP")
+        print("========================")
         print("1. Add Income")
         print("2. Add Expense")
         print("3. Monthly Summary")
         print("4. Category Breakdown")
         print("5. Export Excel")
-        print("6. Check Recurring")
-        print("7. Exit")
+        print("6. Exit")
 
         choice = input("> ")
 
@@ -28,26 +28,25 @@ if __name__ == "__main__":
 
         if choice == "1":
             amt = float(input("Amount: "))
-            core.add_income(amt)
+            core.add_income(user_id, "Income", "Income", amt)
 
         elif choice == "2":
             cat = input("Category: ")
             amt = float(input("Amount: "))
-            core.add_expense(amt, cat)
+            core.add_expense(user_id, "Expense", cat, amt)
 
         elif choice == "3":
-            print(core.get_month_summary(month))
+            print(core.get_month_summary(user_id, month))
 
         elif choice == "4":
-            print(core.category_breakdown(month))
+            print(core.category_breakdown(user_id, month))
 
         elif choice == "5":
-            reports.export_excel()
+            excel.export_transactions(db, user_id, month)
 
         elif choice == "6":
-            due = recurring.due_today()
-            for d in due:
-                print("DUE:", d["category"], d["amount"])
-
-        elif choice == "7":
             break
+
+
+if __name__ == "__main__":
+    main()
