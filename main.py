@@ -63,9 +63,9 @@ while True:
             print("DUE:", item["category"], item["amount"])
 
     elif choice == "6":
-    goal = input("Savings Goal: ")
-    amt = float(input("Amount: "))
-    budget.add_savings(goal, amt)
+        goal = input("Savings Goal: ")
+        amt = float(input("Amount: "))
+        budget.add_savings(goal, amt)
 
     elif choice == "7":
         print(budget.savings_summary())
