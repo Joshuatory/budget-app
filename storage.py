@@ -67,3 +67,47 @@ class ExcelStorage:
 
     def get_recurring(self):
         return pd.read_excel(FILE, sheet_name="recurring")
+    
+    def add_savings(self, goal, amount):
+    """
+        Add money toward a savings goal.
+        """
+
+    df = pd.read_excel(FILE, sheet_name="savings")
+
+    if goal in df["goal"].values:
+        df.loc[df["goal"] == goal, "current"] += amount
+    else:
+        new_row = pd.DataFrame([{
+            "goal": goal,
+            "target": 0,
+            "current": amount
+        }])
+        df = pd.concat([df, new_row], ignore_index=True)
+
+    with pd.ExcelWriter(FILE, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+        df.to_excel(writer, sheet_name="savings", index=False)
+
+
+    def get_savings(self):
+        return pd.read_excel(FILE, sheet_name="savings")
+
+    def export_excel(self):
+        """
+        Creates a timestamped backup/export of the full budget file.
+        """
+
+        now = datetime.now().strftime("%Y-%m-%d_%H-%M")
+
+        filename = f"budget_export_{now}.xlsx"
+
+        df_transactions = pd.read_excel(FILE, sheet_name="transactions")
+        df_savings = pd.read_excel(FILE, sheet_name="savings")
+        df_recurring = pd.read_excel(FILE, sheet_name="recurring")
+
+        with pd.ExcelWriter(filename, engine="openpyxl") as writer:
+            df_transactions.to_excel(writer, sheet_name="transactions", index=False)
+            df_savings.to_excel(writer, sheet_name="savings", index=False)
+            df_recurring.to_excel(writer, sheet_name="recurring", index=False)
+
+        print(f"Exported: {filename}")

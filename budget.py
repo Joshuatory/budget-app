@@ -84,3 +84,36 @@ class BudgetEngine:
         df = df[df["type"] == "Expense"]
 
         return df.groupby("category")["amount"].sum().to_dict()
+    
+    # ---------------- SAVINGS ----------------
+
+    def add_savings(self, goal, amount):
+     """
+      Add money to savings goal.
+      """
+      self.storage.add_savings(goal, amount)
+
+
+    def savings_summary(self):
+      """
+        Shows progress of all savings goals.
+     """
+     df = self.storage.get_savings()
+
+      return df.to_dict(orient="records")
+
+    def apply_recurring(self):
+        """
+        Automatically inserts recurring expenses into transactions.
+        """
+
+     df = self.storage.get_recurring()
+     now = datetime.now()
+
+     for _, row in df.iterrows():
+
+           # Always add monthly for now (simplest + stable)
+        self.add_expense(
+            category=row["category"] + " (Recurring)",
+            amount=row["amount"]
+        )

@@ -24,7 +24,11 @@ while True:
     print("3. Monthly Summary")
     print("4. Category Breakdown")
     print("5. Check Recurring")
-    print("6. Exit")
+    print("6. Add Savings")
+    print("7. View Savings")
+    print("8. Apply Recurring Expenses")
+    print("9. Export Excel")
+    print("10 . Exit")
 
     choice = input("> ")
 
@@ -58,6 +62,21 @@ while True:
         for item in due:
             print("DUE:", item["category"], item["amount"])
 
-    # ---------------- EXIT ----------------
     elif choice == "6":
+    goal = input("Savings Goal: ")
+    amt = float(input("Amount: "))
+    budget.add_savings(goal, amt)
+
+    elif choice == "7":
+        print(budget.savings_summary())
+
+    elif choice == "8":
+        budget.apply_recurring()
+        print("Recurring expenses applied.")
+
+    elif choice == "9":
+        storage.export_excel()
+
+    # ---------------- EXIT ----------------
+    elif choice == "10":
         break
